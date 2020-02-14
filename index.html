@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Offline Invoicing</title>
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/plugins/daterangepicker/bootstrap.datetimepicker.css" rel="stylesheet" type="text/css" />    
+    <link href="assets/plugins/dataTables/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/plugins/dataTables/dataTables.bootstrap.min.css" rel="stylesheet" type="text/css" />  
+    <link href="assets/css/styles.css" rel="stylesheet" type="text/css" />
+  
+ 
+    </head>
+    <body>
+       <div id="sending"><img src="assets/images/sending.gif"></div>
+        <div id="sidebar">
+            <ul id="menu-v">
+                <li><a href="#" id="dashboard"><span class="glyphicon glyphicon-stats"></span> Dashboard</a></li i>
+                <li>
+                    <a href="#" class="arrow"><span class="glyphicon glyphicon-credit-card"></span> Invoices</a>
+                    <ul>
+                        <li><a href="#create" class="scrollitem"  id="create_btn">Create</a></li>
+                        <li><a href="#manage_invoices" class="scrollitem">Manage</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#" class="arrow"><span class="glyphicon glyphicon-file"></span> Quotes</a>
+                    <ul>
+                        <li><a href="#" id="create_quote">Create</a></li>
+                        <li><a href="#manage_quotes" class="scrollitem">Manage</a></li>
+                    </ul>
+                </li>
+
+                <li>
+                    <a href="#" class="arrow"><span class="glyphicon glyphicon-list"></span> Products</a>
+                    <ul>
+                        <li><a href="#" class="create_product">Create</a></li>
+                        <li><a href="#manage_products" class="scrollitem">Manage</a></li>
+                    </ul>
+                </li>
+
+                <li>
+                    <a href="#" class="arrow"><span class="glyphicon glyphicon-user"></span> Customers</a>
+                    <ul>
+                        <li><a href="#" class="create_customer">Create</a></li>
+                        <li><a href="#manage_customers" class="scrollitem">Manage</a></li>
+                    </ul>
+                </li>
+                <li><a href="#" class="settings"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
+                <li><a href="#" id="quit"><span class="glyphicon glyphicon-off"></span> Exit</a></li>
+            </ul>
+        </div>
+
+
+
+
+           <div class="container wrapper">  
+
+            <div id="dashboard" class="page">                
+                <div class="simulate">
+                    <div id="inner">
+                       <div class="row">
+                           <div class="col-md-12">
+                                <div id="year_area"></div>
+                           </div>
+                       </div>
+
+                       <div class="row">
+                        <div class="col-md-3">
+                            <div class="stats" id="quotes">                                
+                                <h4>Quotations</h4>
+                                <div class="numbers">0</div>
+                                <div class="values">0</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stats" id="all">                                
+                                <h4>Invoices</h4>
+                                <div class="numbers">0</div>
+                                <div class="values">0</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3" id="unpaid">
+                            <div class="stats">                                
+                                <h4>Unpaid</h4>
+                                <div class="numbers">0</div>
+                                <div class="values">0</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stats" id="paid">                                
+                                <h4>Paid</h4>
+                                <div class="numbers">0</div>
+                                <div class="values">0</div>
+                            </div>
+                        </div>
+                        
+
+                       </div>
+                       
+                     
+               
+                  </div>
+              </div>
+            </div>
+
+
+            <div id="create" class="page">
+                 <div class="simulate">
+
+                    <div id="inner">
+                    <form id="create_invoice">
+                        <input type="hidden" name="action" id="action">
+                        <input type="hidden" name="customer" id="customer">
+                        <input type="hidden" name="invoice_id" id="invoice_id">
+                        <div class="row">
+                            <div class="col-xs-5">
+                                <h1 id="logo">                                    
+                                </h1>
+                            </div>
+                            <div class="col-xs-7 text-right">
+                                <div class="row">
+                                    <div class="col-xs-9">
+                                        <h1 id="title">INVOICE</h1>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <select name="invoice_status" id="invoice_status" class="form-control"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 class="float-left">To</h4>
+                                         <button class="btn btn-sm btn-warning float-right select-customer"><span class="glyphicon glyphicon-search"></span> Select a customer</button> 
+                                        <div class="clear"></div>
+                                    </div>
+                                    <div class="panel-body form-group form-group-sm">
+                                        <div class="row">
+                                            <div class="col-xs-6">
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control margin-bottom copy-input" name="customer_name" id="customer_name" placeholder="Customer Name" tabindex="1" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control margin-bottom copy-input" name="customer_address_1" id="customer_address_1" placeholder="Address Line 1" tabindex="3">	
+                                                </div>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control margin-bottom copy-input" name="customer_postcode" id="customer_postcode" placeholder="Postcode" tabindex="5">		
+                                                </div>
+                                                <div class="form-group no-margin-bottom">
+                                                    <input type="text" class="form-control copy-input required" name="customer_phone" id="customer_phone" placeholder="Phone" tabindex="7">					
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-6">
+                                                <div class="input-group float-right margin-bottom">
+                                                    <span class="input-group-addon warning">@</span>
+                                                    <input type="email" class="form-control copy-input required" name="customer_email" id="customer_email" placeholder="E-mail address" aria-describedby="sizing-addon1" tabindex="2" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control margin-bottom copy-input" name="customer_address_2" id="customer_address_2" placeholder="Address Line 2" tabindex="4">
+                                                </div>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control margin-bottom copy-input required" name="customer_vat" id="customer_vat" placeholder="VAT Number" tabindex="6">
+                                                </div>
+                                                <div class="form-group no-margin-bottom">
+                                                    <input type="text" class="form-control required" name="customer_person" id="customer_person" placeholder="Contact Person" tabindex="8">
+                                                </div>
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-6 text-right">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4>From</h4>
+                                    </div>
+                                    <div class="panel-body form-group form-group-sm">
+                                        <div class="row">
+                                            <div class="col-xs-6">
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control margin-bottom required" name="company_name" id="company_name" placeholder="Name" tabindex="9" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control margin-bottom" name="company_address" id="company_address" placeholder="Address Line 1" tabindex="11">	
+                                                </div>
+                                                <div class="form-group no-margin-bottom">
+                                                    <input type="text" class="form-control required" name="company_phone" id="company_phone" placeholder="Phone" tabindex="13">
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-6">
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control margin-bottom" name="company_vat" id="company_vat" placeholder="VAT Number" tabindex="10">
+                                                </div>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control margin-bottom required" name="company_town" id="company_town" placeholder="Address Line 2" tabindex="12">							
+                                                </div>
+                                                <div class="input-group float-right margin-bottom">
+                                                    <span class="input-group-addon warning">@</span>
+                                                    <input type="text" class="form-control required" name="company_email" id="company_email" placeholder="Email" tabindex="14">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-xs-6 no-padding-right">
+                                        <div class="form-group">
+                                            <div class="input-group date" id="invoice_date">
+                                                <input type="text" class="form-control required" name="invoice_date" id="date" placeholder="Select Invoice Date"  required="required">
+                                                <span class="input-group-addon">
+                                                    <span class="glyphicon glyphicon-calendar"></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xs-6">
+                                        <div class="form-group">
+                                            <div class="input-group date" id="invoice_due_date">
+                                                <input type="text" class="form-control" name="invoice_due_date" id="due_date" placeholder="Select Due Date" required="required">
+                                                <span class="input-group-addon">
+                                                    <span class="glyphicon glyphicon-calendar"></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- / end client details section -->
+                        <table class="table table-bordered" id="invoice_table">
+                            <thead>
+                                <tr>
+                                    <th width="300">
+                                        <h4><a href="#" class="btn btn-success btn-xs add-row"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a> Item</h4>
+                                    </th>
+                                    <th width="300">
+                                        <h4>Description</h4>
+                                    </th>
+                                    <th>
+                                        <h4>Qty</h4>
+                                    </th>
+                                    <th>
+                                        <h4>Price</h4>
+                                    </th>
+                                    <th width="150">
+                                        <h4>Discount</h4>
+                                    </th>
+                                    <th>
+                                        <h4>Sub Total</h4>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoice_items">
+                                <tr>
+                                    <td>
+                                        <div class="form-group form-group-sm  no-margin-bottom">
+                                            <a href="#" class="btn btn-danger btn-xs delete-row"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+                                            <input type="text" class="form-control form-group-sm item-input invoice_product" id="item" name="invoice_product[]" placeholder="Enter item">
+                                            <p class="item-select">or <a href="#" class="btn btn-info btn-xs add-row"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></a></p>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <div class="form-group form-group-sm  no-margin-bottom">
+                                           <input type="text" class="form-control form-group-sm invoice_product_desc" name="invoice_product_desc[]" placeholder="Enter a description">
+                                        </div>
+                                    </td>
+
+                                    <td class="text-right">
+                                        <div class="form-group form-group-sm no-margin-bottom">
+                                            <input type="text" class="form-control calculate" name="invoice_product_qty[]" value="1">
+                                        </div>
+                                    </td>
+                                    <td class="text-right">
+                                        <div class="input-group input-group-sm  no-margin-bottom">
+                                            <span class="input-group-addon" id="price_currency"></span>
+                                            <input type="text" class="form-control calculate invoice_product_price required" id="price" name="invoice_product_price[]" aria-describedby="sizing-addon1" placeholder="0.00">
+                                        </div>
+                                    </td>
+                                    <td class="text-right">
+                                        <div class="form-group form-group-sm  no-margin-bottom">
+                                            <input type="text" class="form-control calculate" name="invoice_product_discount[]" placeholder="Enter % or value">
+                                        </div>
+                                    </td>
+                                    <td class="text-right">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-addon" id="price_currency"></span>
+                                            <input type="text" class="form-control calculate-sub" name="invoice_product_sub[]" id="invoice_product_sub" value="0.00" aria-describedby="sizing-addon1" readonly>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div id="invoice_totals" class="padding-right row text-right">
+                            <div class="col-xs-6">
+                                <div class="input-group form-group-sm textarea no-margin-bottom">
+                                    <textarea class="form-control" id="invoice_notes" name="invoice_notes" placeholder="Enter any order notes to display in the quote or invoice."></textarea>
+                                </div>
+                                
+                            </div>
+                            <div class="col-xs-6 no-padding-right">
+                                <div class="row">
+                                    <div class="col-xs-3 col-xs-offset-6">
+                                        <strong>Sub Total:</strong>
+                                    </div>
+                                    <div class="col-xs-3">
+                                       <span id="invoice_sub_currency"></span><span class="invoice-sub-total">0.00</span>
+                                        <input type="hidden" name="invoice_subtotal" id="invoice_subtotal">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-3 col-xs-offset-6">
+                                        <strong>Discount:</strong>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <span id="invoice_discount_currency"></span><span class="invoice-discount">0.00</span>
+                                        <input type="hidden" name="invoice_discount" id="invoice_discount">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-3 col-xs-offset-6">
+                                        <strong class="shipping">Shipping:</strong>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-addon" id="shipping_currency"></span>
+                                            <input type="text" class="form-control calculate shipping" id="invoice_shipping" name="invoice_shipping" aria-describedby="sizing-addon1" placeholder="0.00">
+                                        </div>
+                                    </div>
+                                </div>
+                         
+                                <div class="row" id="vat_line">
+                                    <div class="col-xs-3 col-xs-offset-6">
+                                        <strong>TAX/VAT:</strong>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <span id="vat_currency"></span><span class="invoice-vat" data-enable-vat="" data-vat-rate="" data-vat-method="">0.00</span>
+                                        <input type="hidden" name="invoice_vat" id="invoice_vat">
+                                    </div>
+                                </div>
+                             
+                                <div class="row">
+                                    <div class="col-xs-3 col-xs-offset-6">
+                                        <strong>Total:</strong>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <span id="invoice_total_currency"></span><span class="invoice-total">0.00</span>
+                                        <input type="hidden" name="invoice_total" id="invoice_total">
+                                    </div>
+                                </div>
+                            </div>
+            
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 margin-top btn-group float-right">
+                                <span class="btn btn-warning" id="cancel">Cancel</span>
+                                <input type="submit" id="action_create_invoice" class="btn btn-success" value="Create Invoice" data-loading-text="Creating...">
+                            </div>
+                        </div>
+                    </form>
+
+
+                    
+                    </div> 
+                   
+                </div>
+              </div>
+
+
+
+              <div id="manage_invoices" class="page">                
+                <div class="simulate">
+                    <div id="inner">
+                        <h2>Manage Invoices</h2>
+                        <hr>
+                        <table class="table table-bordered" id="invoiceList">
+                            <thead>
+                                <tr>           
+                                    <th width="50">No.</th>                                                           
+                                    <th>Customer</th>
+                                    <th>Total</th>
+                                    <th>Date</th>                                      
+                                    <th>Due</th>
+                                    <th>Status</th>
+                                    <th width="250">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoice_list"></tbody>
+                        </table>
+
+                    </div>
+                    </div>
+              </div>
+
+
+
+              <div id="manage_quotes" class="page">                
+                <div class="simulate">
+                    <div id="inner">
+                        <h2>Manage Quotes</h2>
+                        <hr>
+                        <table class="table table-bordered" id="quoteList">
+                            <thead>
+                                <tr>   
+                                    <th width="50">No.</th>                                                               
+                                    <th>Customer</th>
+                                    <th>Total</th>
+                                    <th>Date</th>                                      
+                                    <th>Valid Until</th>
+                                    <th>Status</th>
+                                    <th width="250">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="quote_list"></tbody>
+                        </table>
+                    </div>
+                    </div>
+              </div>
+
+
+
+              <div id="manage_products" class="page">                
+                <div class="simulate">
+                    <div id="inner">
+                        <h2>Manage Products</h2>
+                        <hr>
+                        <table class="table table-bordered" id="productList">
+                            <thead>
+                                <tr>                                                                      
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Price</th> 
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="product_list"></tbody>
+                        </table>
+                    </div>
+                    </div>
+              </div>
+
+
+
+              <div id="manage_customers" class="page">                
+                <div class="simulate">
+                    <div id="inner">
+                        <h2>Manage Customers</h2>
+                        <hr>
+                        <table class="table table-bordered" id="customerList">
+                            <thead>
+                                <tr>                                                                      
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>                                      
+                                    <th>Contact</th>                       
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customer_list"></tbody>
+                        </table>
+                    </div>
+                    </div>
+              </div>
+            
+             
+ 
+              <div id="create_product" class="modal fade">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                      <h4 class="modal-title">Product</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form id="add_product">
+                           <input type="hidden" name="product_id" id="product_id">
+                            <div class="row">
+                                <div class="col-xs-4">
+                                    <input type="text" class="form-control required" id="product_name" name="product_name" placeholder="Enter product name">
+                                </div>
+                                <div class="col-xs-5">
+                                    <input type="text" class="form-control required" id="product_desc" name="product_desc" placeholder="Enter a description">
+                                </div>
+                                <div class="col-xs-3">
+                                    <div class="input-group">
+                                        <span class="input-group-addon" id="product_price_currency"></span>
+                                        <input type="text" name="product_price" id="product_price" class="form-control required" placeholder="0.00" aria-describedby="sizing-addon1">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 margin-top btn-group">
+                                    <input type="submit" id="action_add_product" class="btn btn-success float-right" value="Add product" data-loading-text="Adding...">
+                                </div>
+                            </div>
+                        </form>
+                    </div>                  
+                </div> 
+            </div>
+          </div>  
+
+
+
+
+
+              <div id="create_customer" class="modal fade">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                      <h4 class="modal-title">Customer</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form method="post" id="add_customer">
+                            <input type="hidden" name="customer_id" id="customer_id">
+                                  <div class="panel panel-default">
+                                      <div class="panel-body form-group form-group-sm">
+                                            <div class="row">
+                                                <div class="col-xs-6">
+                                                    <div class="form-group">
+                                                        <input type="text" class="form-control margin-bottom required" name="customer_name" id="customerName" placeholder="Customer Name" tabindex="1">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <input type="text" class="form-control margin-bottom required" name="customer_address_1" id="customerAddress_1" placeholder="Address Line 1" tabindex="3">	
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <input type="text" class="form-control margin-bottom required" name="customer_postcode" id="customerPostcode" placeholder="Postcode" tabindex="5">		
+                                                    </div>
+                                                    <div class="form-group no-margin-bottom">
+                                                        <input type="text" class="form-control required" name="customer_phone" id="customerPhone" placeholder="Phone" tabindex="7">					
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-6">
+                                                    <div class="input-group float-right margin-bottom">
+                                                        <span class="input-group-addon">@</span>
+                                                        <input type="email" class="form-control required" name="customer_email" id="customerEmail" placeholder="E-mail address" aria-describedby="sizing-addon1" tabindex="2">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <input type="text" class="form-control margin-bottom" name="customer_address_2" id="customerAddress_2" placeholder="Address Line 2" tabindex="4">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <input type="text" class="form-control margin-bottom" name="customer_vat" id="customerVat" placeholder="VAT Number" tabindex="6">
+                                                    </div>
+                                                    <div class="form-group no-margin-bottom">
+                                                        <input type="text" class="form-control required" name="customer_person" id="customerPerson" placeholder="Contact Person" tabindex="8">
+                                                    </div>
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                   <div class="row">
+                                <div class="col-xs-12 margin-top btn-group">
+                                    <input type="submit" id="action_create_customer" class="btn btn-success float-right" value="Create Customer" data-loading-text="Creating...">
+                                </div>
+                            </div>
+                        </form>
+                    </div>                  
+                </div> 
+            </div>
+          </div>  
+
+
+
+            
+
+    
+            <div id="insert" class="modal fade">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Select a product</h4>
+                  </div>
+                  <div class="modal-body">
+                    <table class="table table-bordered" id="productSelect">
+                        <thead>
+                            <tr>                                                                      
+                                <th>Name</th><th>Description</th><th>Price</th><th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="product_select"></tbody>
+                    </table>
+                  </div>                 
+                </div> 
+            </div>
+          </div>
+
+
+
+
+
+          <div id="settings" class="modal fade">
+            <div class="modal-dialog modal-sm">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title">Settings</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="saveSettings">
+                    
+                        <div class="row">
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" name="symbol" id="symbol" placeholder="Currency Symbol" required="required">
+                        </div>
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" name="vat_percentage" id="vat_percentage" placeholder="Vat" required="required">
+                                    <span class="input-group-addon">
+                                        %
+                                    </span>
+                                </div>
+                            </div>
+                        </div>   
+                        
+                        <div class="col-md-4">
+                            <label><input type="checkbox" name="charge_vat" id="charge_vat" style="max-width: 30px; float: left;"> Add Vat </label>
+                        </div>
+
+                    </div>
+                       
+                        <div class="form-group">
+                            <label for="userName"> Logo </label>                      
+                            <div id="current_img"></div>                                                     
+                        </div>
+
+                        <button class="btn select_logo">Select Image</button> 
+                        
+                        <div class="form-group" style="margin-top: 15px; margin-bottom: 15px;">
+                              <textarea class="form-control" name="invoice_footer" id="invoice_footer" placeholder="Enter any text to display at the bottom of every quote or invoice."></textarea>
+                        </div>
+                        
+                            <strong>SMTP SETTINGS</strong>
+                            
+                            <div class="form-group">                              
+                                <input type="checkbox" id="smtp" style="max-width: 30px; float: left;"> Use offlineinvoicing.com settings
+                              </div>  
+                              
+                              <hr>   
+                            
+                            <div class="form-group row">
+                                <label class="col-sm-3">Host:</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="smtp_host">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-sm-3">Port:</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="smtp_port">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-sm-3">User:</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="smtp_user">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-sm-3">Pass:</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="smtp_pass">
+                                </div>
+                            </div>
+
+                             
+            
+                 
+                        <input type="submit" id="submitProduct" class="btn btn-primary btn-block waves-effect waves-light">
+                    </form>
+                </div>                 
+              </div> 
+          </div>
+        </div>
+
+
+
+
+
+
+        <div id="send" class="modal fade">
+            <div class="modal-dialog modal-md">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title"><span id="email_customer"></span></h4>
+                </div>
+                <div class="modal-body">
+                    <form id="sendEmail">                    
+                                <div class="row">
+                                        <div class="col-md-6">
+                                        <div class="input-group float-right margin-bottom">
+                                        <span class="input-group-addon warning">To</span>
+                                            <input type="text" class="form-control" name="email_to" id="email_to" placeholder="Email Address" required="required">
+                                        </div>
+                                        </div>  
+
+                                        <div class="col-md-6">
+                                            <div class="input-group float-right margin-bottom">
+                                            <span class="input-group-addon warning">From</span>
+                                                <input type="text" class="form-control" name="email_from" id="email_from" placeholder="Email Address" required="required">
+                                            </div>
+                                            </div>  
+                                        </div>
+
+
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" class="form-control" name="email_subject" id="email_subject" placeholder="Subject" required="required">
+                                        </div>  
+                                     </div>  
+                                        
+                                     <br>
+                                    <div class="form-group">
+                                        <textarea class="form-control" name="email_msg" id="email_msg" ></textarea>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div id="smtp_status"></div>
+                                        </div> 
+
+                                        <div class="col-sm-6">
+                                            <input type="submit" id="submitEmail" class="btn btn-primary btn-block waves-effect waves-light" value="Send Email">
+                                        </div>  
+                                     </div>  
+            
+                        
+                    </form>
+                </div>                 
+              </div> 
+          </div>
+        </div>
+
+
+
+
+          
+    
+            <div id="insert_customer" class="modal fade">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Select a customer</h4>
+                  </div>
+                  <div class="modal-body">
+                    <table class="table table-bordered" id="customerSelect">
+                        <thead>
+                            <tr>                                                                      
+                                <th>Name</th><th>Contact</th><th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customer_select"></tbody>
+                    </table>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn">Cancel</button>
+                  </div>
+                </div> 
+              </div>
+            </div>
+    </div>
+    
+    
+
+    <div id="pdf" class="invoice"></div>
+</body>
+</html>
+
+<script> window.$ = window.jQuery = require('jquery'); </script>
+<script src="assets/plugins/bootstrap/bootstrap.min.js"></script>
+<script src="assets/plugins/daterangepicker/moment.min.js"></script>
+<script src="assets/plugins/daterangepicker/bootstrap.datetime.js"></script>
+<script src="assets/plugins/dataTables/jquery.dataTables.min.js"></script>
+<script src="assets/plugins/dataTables/jquery.dataTables.bootstrap.js"></script>
+<script src="assets/js/scripts.js"></script>
+
+ 
+
+  </body>
+</html>

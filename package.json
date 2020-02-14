@@ -1,0 +1,56 @@
+{
+  "name": "OfflineInvoicing",
+  "version": "0.1.0",
+  "description": "Offline Invoicing software for Windows.",
+  "author": "Hosting Domain",
+  "private": true,
+  "main": "start.js",
+  "build": {
+    "appId": "01",
+    "directories": {
+      "buildResources": "assets"
+    }
+  },
+  "dependencies": {
+    "electron": "^6.0.12",
+    "electron-context-menu": "^0.15.1",
+    "electron-pdf-window": "^1.0.12",
+    "electron-store": "^5.1.0",
+    "electron-wix-msi": "^2.2.0",
+    "file-saver": "^2.0.2",
+    "highcharts": "^8.0.0",
+    "html2canvas": "^1.0.0-rc.5",
+    "html2pdf.js": "^0.9.1",
+    "is-port-reachable": "^3.0.0",
+    "jquery": "^3.4.1",
+    "jspdf": "^1.5.3",
+    "nedb": "^1.8.0",
+    "nodemailer": "^6.4.2",
+    "nodemon": "^1.14.12",
+    "path": "^0.12.7",
+    "sweetalert2": "^9.5.4"
+  },
+  "scripts": {
+    "electron": "cross-env NODE_ENV=dev nodemon --exec \"\"electron .\"\"",
+    "electron-build": "electron-builder"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "cross-env": "^6.0.3",
+    "electron-builder": "^21.2.0",
+    "electron-is-dev": "^1.1.0",
+    "electron-winstaller": "^4.0.0",
+    "nodemon": "^1.19.3"
+  }
+}
