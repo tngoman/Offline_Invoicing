@@ -60,9 +60,13 @@
                 <div class="simulate">
                     <div id="inner">
                        <div class="row">
-                           <div class="col-md-12">
+                           <div class="col-md-9">
                                 <div id="year_area"></div>
                            </div>
+
+                           <div class="col-md-3">
+                            <div id="pie"></div>
+                       </div>
                        </div>
 
                        <div class="row">
@@ -607,10 +611,14 @@
                     <form id="saveSettings">
                     
                         <div class="row">
-                        <div class="col-md-3">
+                        <div class="col-md-7">
+                         <div class="form-group">
                             <input type="text" class="form-control" name="symbol" id="symbol" placeholder="Currency Symbol" required="required">
                         </div>
-                        <div class="col-md-5">
+                        </div>
+                         </div>
+                         <div class="row">
+                        <div class="col-md-7">
                             <div class="form-group">
                                 <div class="input-group">
                                     <input type="text" class="form-control" name="vat_percentage" id="vat_percentage" placeholder="Vat" required="required">
@@ -621,7 +629,7 @@
                             </div>
                         </div>   
                         
-                        <div class="col-md-4">
+                        <div class="col-md-5">
                             <label><input type="checkbox" name="charge_vat" id="charge_vat" style="max-width: 30px; float: left;"> Add Vat </label>
                         </div>
 

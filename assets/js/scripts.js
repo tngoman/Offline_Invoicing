@@ -271,19 +271,7 @@ function format(amount) {
 						title: {
 							text: null
 						}
-					},
-					legend: {
-						layout: 'horizontal',
-						align: 'center',
-						verticalAlign: 'top',
-						x: 0,
-						y: -10,
-						floating: true,
-						borderWidth: 1,
-						backgroundColor: '#FFFFFF',
-						shadow: false,
-						 
-					},
+					}, 
 					labels: {
 						items: [{
 							html: null,
@@ -316,26 +304,58 @@ function format(amount) {
 							lineColor: Highcharts.getOptions().colors[3],
 							fillColor: 'white'
 						}
-					}, {
-						type: 'pie',
+					}]
+				});
+
+
+
+				Highcharts.chart('pie', {
+					chart: {
+						plotBackgroundColor: null,
+						plotBorderWidth: null,
+						plotShadow: false,
+						type: 'pie'
+					},
+					title: {
+						text: group_by == 'day' ? months[data_month-1] + ' ' + year : year
+					},
+					tooltip: {
+						pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+					},
+					accessibility: {
+						point: {
+							valueSuffix: '%'
+						}
+					}, 
+					plotOptions: {
+						pie: {
+							allowPointSelect: true,
+							showInLegend: true,
+							cursor: 'pointer',
+							dataLabels: {
+								enabled: false,
+								format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+							}
+						}
+					},
+					series: [{
 						name: 'Paid vs Unpaid',
+						colorByPoint: true,
 						data: [{
-							name: 'Total Paid',
+							name: 'Paid',
 							y: parseInt(paid_val),
 							color: Highcharts.getOptions().colors[2] 
 						}, {
-							name: 'Total Unpaid',
+							name: 'Unpaid',
 							y: parseInt(unpaid_val),
-							color: Highcharts.getOptions().colors[0] 
-						} ],
-						center: [100, 80],
-						size: 100,
-						showInLegend: false,
-						dataLabels: {
-							enabled: false
-						}
+							color: Highcharts.getOptions().colors[5],
+							sliced: true,
+							selected: true
+						}  ]
 					}]
 				});
+
+ 
 
 				$('#quotes .numbers').text(quote_num);
 				$('#all .numbers').text(total_num);
