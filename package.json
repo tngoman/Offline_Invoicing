@@ -13,10 +13,8 @@
   },
   "dependencies": {
     "electron": "^6.0.12",
-    "electron-context-menu": "^0.15.1",
     "electron-pdf-window": "^1.0.12",
     "electron-store": "^5.1.0",
-    "electron-wix-msi": "^2.2.0",
     "file-saver": "^2.0.2",
     "highcharts": "^8.0.0",
     "html2canvas": "^1.0.0-rc.5",
