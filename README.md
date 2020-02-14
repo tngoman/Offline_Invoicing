@@ -3,10 +3,10 @@
 
 **Development**
 
--Clone this project.
--Open terminal and navigate into the cloned folder.
--Run npm install.
--Then npm run electron 
+- Clone this project.
+- Open terminal and navigate into the cloned folder.
+- Run npm install.
+- Then npm run electron 
 
 ![Create Invoice](https://github.com/tngoman/Offline_Invoicing/blob/master/screenshots/create_invoice.png)
 
