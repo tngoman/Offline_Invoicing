@@ -10,8 +10,8 @@
 
 ![Create Invoice](https://github.com/tngoman/Offline_Invoicing/blob/master/screenshots/create_invoice.png)
 
-![Create Invoice](https://github.com/tngoman/Offline_Invoicing/blob/master/screenshots/invoices.png)
+![Invoice List](https://github.com/tngoman/Offline_Invoicing/blob/master/screenshots/invoices.png)
 
-![Create Invoice](https://github.com/tngoman/Offline_Invoicing/blob/master/screenshots/pdf_invoice.png)
+![PDF Invoice](https://github.com/tngoman/Offline_Invoicing/blob/master/screenshots/pdf_invoice.png)
 
-![Create Invoice](https://github.com/tngoman/Offline_Invoicing/blob/master/screenshots/dashboard.png)
+![Dashboard](https://github.com/tngoman/Offline_Invoicing/blob/master/screenshots/dashboard.png)
