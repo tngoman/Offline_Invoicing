@@ -1,10 +1,10 @@
 # Offline Invoicing
  Desktop invoicing app created with electron
  
- **To use on Windows**
+ **To use on Windows:**
  [Download](http://download.offlineinvoicing.com/OfflineInvoicing.msi) the MSI Installer
 
-**To Customize/Create your own installer**
+**To Customize/Create your own installers**
 
 - Clone this project.
 - Open terminal and navigate into the cloned folder.
