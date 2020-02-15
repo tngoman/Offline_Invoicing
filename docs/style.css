@@ -687,7 +687,7 @@ h6{
 .btn--green-bg{
 	color:#F7A35C;
 	background-color:#fff;
-	border:2px #F7A35C solid;
+	border:1px #F7A35C solid;
 }
 .btn--green-bg:hover{
 	color:#fff;
