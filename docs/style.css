@@ -658,13 +658,14 @@ h6{
 	transition: all 0.3s ease;  
  }
 .btn--blue-bg{
-	color:#fff;
-	background-color:#001f84;
+	color: #001f84;
+	background-color:#fff;
 	border:2px #001f84 solid;
 }
 .btn--blue-bg:hover{
-	background:none;
-	color:#001f84;
+	color: #fff;
+	background-color:#001f84;
+
 }
 .btn--lightblue-bg{
 	color:#001f84;
@@ -684,13 +685,13 @@ h6{
 	color:#fff;
 }
 .btn--green-bg{
-	color:#fff;
-	background-color:#3cce90;
-	border:2px #3cce90 solid;
+	color:#F7A35C;
+	background-color:#fff;
+	border:2px #F7A35C solid;
 }
 .btn--green-bg:hover{
-	color:#3cce90;
-	background:none;
+	color:#fff;
+	background-color:#F7A35C;
 }
 .btn--green-border{ 
 	color:#3cce90; 
