@@ -4,7 +4,7 @@
  **To use on Windows:**
  [Download](http://download.offlineinvoicing.com/OfflineInvoicing.msi) the MSI Installer
 
-**To Customize/Create your own installers**
+**To Customize/Create your own installer**
 
 - Clone this project.
 - Open terminal and navigate into the cloned folder.
