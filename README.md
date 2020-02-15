@@ -1,5 +1,5 @@
 # Offline Invoicing
- Desktop invoicing app created with electron
+ Desktop invoicing app built with electron
  
  **To use on Windows:**
  [Download](http://download.offlineinvoicing.com/OfflineInvoicing.msi) the MSI Installer
