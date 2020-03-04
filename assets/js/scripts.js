@@ -1,8 +1,8 @@
 const name = require(__dirname + '/package.json').name;
 const path = require("path");
 const fs = require('fs');
-const { ipcRenderer, remote, app} = require('electron');
 const PDFWindow = require('electron-pdf-window');
+const { ipcRenderer, shell } = require('electron');
 const electron = require('electron').remote;
 const {BrowserWindow}= require('electron').remote;
 const dialog = electron.dialog;
@@ -21,29 +21,15 @@ const checkServer = require('is-port-reachable');
 const Highcharts = require('highcharts');
 const year = new Date().getFullYear();
 const Swal = require('sweetalert2');
+const remote = require('electron').remote;
+const app = remote.app; 
+let version = require(__dirname + '/package.json').version;
+let exec = require('child_process').execFile;
 let cloned = $('#invoice_table tr:last').clone();
 let data_month = new Date().getMonth();
 let charge_vat = false;
 let smtp_status = false;
-let group_by = 'month';
-let unpaid_num = 0;
-let unpaid_val = 0;
-let quote_num = 0;
-let quote_val = 0;
-let paid_num = 0;
-let paid_val = 0;
-let total_num = 0;
-let total_val = 0;
-let year_invoices = {};
-let year_paid = {};
-let year_unpaid = {};
-let month_invoices = {};
-let month_paid = {};
-let month_unpaid = {};
-let paid = [];
-let unpaid = [];
-let categories = [];
-let values = [];
+let downloading = false;
 let quotes = [];
 let invoices = [];
 let customers = [];
@@ -51,7 +37,7 @@ let products = [];
 let invoice = {};
 let item = null;
 let sending = false;
-let symbol = "$";
+let symbol = "R";
 let settings = {};
 let percentage = 0;
 let host;
@@ -108,8 +94,336 @@ function format(amount) {
 }
 
 
-//Get and load dashboard data
-(function (){
+
+//Check if file directory exists
+  if (!fs.existsSync(stores+file_path)) {
+    fs.mkdir(stores+file_path, { recursive: true }, (err) => {
+		if (err) throw err;
+	 });
+}
+
+ 
+
+$(document).ready(function() {
+
+	loadDashboard();
+	showCompanyDetails();	
+	getInvoices();
+	getCustomers();
+	getProducts();
+  
+
+//Dashboard click
+$('#dash').click(function(){
+	loadDashboard();
+});
+
+
+//Create invoice click
+  $('#create_btn').click(function(){
+	$('#create_invoice').get(0).reset();
+	$('#action').val('create_invoice');
+	$('#title').text('INVOICE');	
+	$('#action_create_invoice').val('Create Invoice');
+	$('#invoice_items').empty();
+	calculateTotal();
+	$("#invoice_status").empty();
+	$("#invoice_status").html(`<option value="unpaid">Unpaid</option><option value="paid">Paid</option>`);
+	$('#date').val(moment().format('YYYY-MM-DD'));
+	$('#due_date').val(moment().format('YYYY-MM-DD'));
+	cloned.clone().appendTo('#invoice_table');
+
+	showCompanyDetails();		
+  });
+
+
+//Create quote click
+  $('#create_quote').click(function(){
+	$('#create_invoice').get(0).reset();
+	$('#action').val('create_quote');
+	$('#title').text('QUOTE');	
+	$('#action_create_invoice').val('Create Quote');
+	$('#invoice_items').empty();
+	calculateTotal();
+	$("#invoice_status").empty();
+	$("#invoice_status").html(`<option value="pending">Pending</option>`);
+	$('#date').val(moment().format('YYYY-MM-DD'));
+	$('#due_date').val(moment().format('YYYY-MM-DD'));
+	cloned.clone().appendTo('#invoice_table');
+	showCompanyDetails();	
+	let margin = 1 * -100 + '%';
+    $('.wrapper').animate({
+      marginLeft: margin
+	}, 0);
+});
+
+
+
+//Settings click
+$('.settings').click(function() {
+	if(settings != undefined) {
+
+		if(settings.vat_percentage != undefined) {
+			$('#vat_percentage').val(settings.vat_percentage);
+		}
+
+		if(settings.charge_vat != undefined) {
+			settings.charge_vat == 1 ? $("#charge_vat").prop("checked", true) : $("#charge_vat").prop("checked", false);
+		}
+
+		if(settings.logo != '') {
+			$('#current_img').html(`<img src="${ stores + file_path + settings.logo}"/>`);
+		}
+
+		if(settings.symbol != undefined) {
+			$('#symbol').val(settings.symbol);
+		}
+
+		if(settings.footer != undefined) {
+			$('#invoice_footer').val(settings.footer);
+		}
+
+		else {
+			$('#symbol').val('$');
+		}
+	}	
+	
+	
+	let smtp = storage.get('smtp');
+
+	if(smtp != undefined) {
+		$('#smtp_host').val(smtp.host);
+		$('#smtp_port').val(smtp.port);
+		$('#smtp_user').val(smtp.user);
+		$('#smtp_pass').val(smtp.pass);
+		smtp.default == 1 ? $("#smtp").prop("checked", false) : $("#smtp").prop("checked", true);
+	}
+	else {
+		$("#smtp").prop("checked", true);
+	}
+
+
+	$('#settings').modal({ backdrop: 'static', keyboard: false });
+});
+
+
+
+//Select logo click
+$('.select_logo').click(function(e) {	
+	e.preventDefault();	
+	dialog.showOpenDialog({
+	properties: ['openFile', 'multiSelections']
+}, function (files) {
+	if (files !== undefined) {
+		const filePath = files[0];
+		const fileName = path.basename(filePath);
+		storage.set('settings.logo', filePath.replace(/^.*[\\\/]/, ''));
+		fs.copyFileSync(filePath, stores + file_path + fileName);
+		showLogo(fileName);	
+		}
+	});
+
+});
+
+
+
+//Create product click
+$('.create_product').click(function() {	
+	$("#add_product").get(0).reset();
+	$('#action_add_product').val('Add Product');
+	$('#create_product').modal({ backdrop: 'static', keyboard: false });
+	
+});
+
+
+
+//Save product click
+$("#action_add_product").click(function(e) {
+	e.preventDefault();
+
+	if($('#product_name').val() == '') {
+		Swal.fire(
+			'No Item Name!',
+			'Please enter the name of the item!',
+			'error'
+		  );
+		return false;
+	}
+
+	if($('#product_price').val() == '') {
+		$('#product_price').val(0);
+	}
+	
+
+	let formData =  $("#add_product").toJson(); 
+	actionAddProduct(formData);
+});
+
+
+
+//Save customer click
+$('.create_customer').click(function() {	
+	$("#add_customer").get(0).reset();
+	$('#action_create_customer').val('Create Customer');
+	$('#create_customer').modal({ backdrop: 'static', keyboard: false });
+});
+
+
+
+//Craete customer click
+$("#action_create_customer").click(function(e) {
+	e.preventDefault();
+
+	if($('#customerName').val() == '') {
+		Swal.fire(
+			'No Customer Name!',
+			'Please enter a customer name!',
+			'error'
+		  );
+		return false;
+	}
+
+	let formData =  $("#add_customer").toJson(); 		
+	actionCreateCustomer(formData);
+});
+
+
+
+//Open select product modal
+$(document).on('click', ".item-select", function(e) {
+	   e.preventDefault;
+	   item = $(this);
+	   $('#insert').modal({ backdrop: 'static', keyboard: false });
+	   return false;
+
+   });
+   
+
+
+//Open select customer modal
+   $(document).on('click', ".select-customer", function(e) {
+	   e.preventDefault;
+	   let customer = $(this);
+	   $('#insert_customer').modal({ backdrop: 'static', keyboard: false });
+	   return false;
+ });
+
+
+
+//Menu item click
+ $('a.scrollitem').click(function() {
+	$('a.scrollitem').removeClass('selected');
+	$(this).addClass('selected');
+	let slideNumber = $($(this).attr('href')).index('.page'),
+	margin = slideNumber * -100 + '%';
+	$('.wrapper').animate({
+	marginLeft: margin
+	}, 100);
+
+	return false;
+});
+
+
+
+//Cancel button click
+   $('#cancel').click(() => {
+	let margin = 2 * -100 + '%';
+    $('.wrapper').animate({
+      marginLeft: margin
+	}, 200);
+  });
+
+
+
+//Exit click
+  $('#quit').click(function(){
+	Swal.fire({
+		title: 'Are you sure?',
+		text: "You are about to close the application.",
+		icon: 'warning',
+		showCancelButton: true,
+		confirmButtonColor: '#d33',
+		cancelButtonColor: '#3085d6',
+		confirmButtonText: 'Close Application'
+	  }).then((result) => {    
+
+		if (result.value) {
+			if(sending) {
+				Swal.fire(
+					'Still sending!',
+					'Please wait for the email to be delivered.',
+					'error'
+				  );
+			}
+			else {
+				ipcRenderer.send('app-quit', '');
+			}		
+	   }
+   });
+});
+
+
+
+  function showCompanyDetails() {
+	settings = storage.get('settings');
+	if(settings != undefined) {
+		$('#company_name').val(settings.name);
+		$('#company_email').val(settings.email);
+		$('#company_address').val(settings.address);
+		$('#company_town').val(settings.town);
+		$('#company_vat').val(settings.vat);
+		$('#company_phone').val(settings.phone);
+
+		if(settings.symbol != undefined) {
+			symbol = settings.symbol;
+		}
+
+		if(settings.charge_vat != undefined) {
+			charge_vat = settings.charge_vat == 1 ? true : false;
+			percentage = parseInt(settings.vat_percentage);
+		}
+
+		if(settings.logo != '') {
+			$('#logo').html(`<img src="${ stores + file_path + settings.logo}" class="img-responsive"/>`);
+		}		
+	}	
+	$('#price_currency, #sub_currency, #invoice_sub_currency, #invoice_discount_currency, #shipping_currency, #invoice_total_currency, #vat_currency, #product_price_currency').text(symbol);
+
+	if(charge_vat) {
+		$('#vat_line').show();
+	}
+	else {
+		$('#vat_line').hide();
+	}
+
+	calculateTotal();
+  }
+
+  
+
+
+  function loadDashboard (){
+	
+	let group_by = 'month';
+	let unpaid_num = 0;
+	let unpaid_val = 0;
+	let quote_num = 0;
+	let quote_val = 0;
+	let paid_num = 0;
+	let paid_val = 0;
+	let total_num = 0;
+	let total_val = 0;
+	let year_invoices = {};
+	let year_paid = {};
+	let year_unpaid = {};
+	let month_invoices = {};
+	let month_paid = {};
+	let month_unpaid = {};
+	let paid = [];
+	let unpaid = [];
+	let categories = [];
+	let values = [];
+
 	invoiceDB.find( {}, function ( err, docs ) {
 	   	  if(docs.length > 0) {		 
 
@@ -368,327 +682,9 @@ function format(amount) {
 							 	 
 		 }   
 	});
-  })();
-
-
-//Check if file directory exists
-  if (!fs.existsSync(stores+file_path)) {
-    fs.mkdir(stores+file_path, { recursive: true }, (err) => {
-		if (err) throw err;
-	 });
-}
-
- 
-
-$(document).ready(function() {
-
- 	showCompanyDetails();
-	getInvoices();
-	getCustomers();
-	getProducts();
-  
-
-
-//Create invoice click
-  $('#create_btn').click(function(){
-	$('#create_invoice').get(0).reset();
-	$('#action').val('create_invoice');
-	$('#title').text('INVOICE');	
-	$('#action_create_invoice').val('Create Invoice');
-	$('#invoice_items').empty();
-	calculateTotal();
-	$("#invoice_status").empty();
-	$("#invoice_status").html(`<option value="unpaid">Unpaid</option><option value="paid">Paid</option>`);
-	$('#date').val(moment().format('YYYY-MM-DD'));
-	$('#due_date').val(moment().format('YYYY-MM-DD'));
-	cloned.clone().appendTo('#invoice_table');
-
-	showCompanyDetails();		
-  });
-
-
-//Create quote click
-  $('#create_quote').click(function(){
-	$('#create_invoice').get(0).reset();
-	$('#action').val('create_quote');
-	$('#title').text('QUOTE');	
-	$('#action_create_invoice').val('Create Quote');
-	$('#invoice_items').empty();
-	calculateTotal();
-	$("#invoice_status").empty();
-	$("#invoice_status").html(`<option value="pending">Pending</option>`);
-	$('#date').val(moment().format('YYYY-MM-DD'));
-	$('#due_date').val(moment().format('YYYY-MM-DD'));
-	cloned.clone().appendTo('#invoice_table');
-	showCompanyDetails();	
-	let margin = 1 * -100 + '%';
-    $('.wrapper').animate({
-      marginLeft: margin
-	}, 0);
-});
-
-
-
-//Settings click
-$('.settings').click(function() {
-	if(settings != undefined) {
-
-		if(settings.vat_percentage != undefined) {
-			$('#vat_percentage').val(settings.vat_percentage);
-		}
-
-		if(settings.charge_vat != undefined) {
-			settings.charge_vat == 1 ? $("#charge_vat").prop("checked", true) : $("#charge_vat").prop("checked", false);
-		}
-
-		if(settings.logo != '') {
-			$('#current_img').html(`<img src="${ stores + file_path + settings.logo}"/>`);
-		}
-
-		if(settings.symbol != undefined) {
-			$('#symbol').val(settings.symbol);
-		}
-
-		if(settings.footer != undefined) {
-			$('#invoice_footer').val(settings.footer);
-		}
-
-		else {
-			$('#symbol').val('$');
-		}
-	}	
-	
-	
-	let smtp = storage.get('smtp');
-
-	if(smtp != undefined) {
-		$('#smtp_host').val(smtp.host);
-		$('#smtp_port').val(smtp.port);
-		$('#smtp_user').val(smtp.user);
-		$('#smtp_pass').val(smtp.pass);
-		smtp.default == 1 ? $("#smtp").prop("checked", false) : $("#smtp").prop("checked", true);
-	}
-	else {
-		$("#smtp").prop("checked", true);
-	}
-
-
-	$('#settings').modal({ backdrop: 'static', keyboard: false });
-});
-
-
-
-//Select logo click
-$('.select_logo').click(function(e) {	
-	e.preventDefault();	
-	dialog.showOpenDialog({
-	properties: ['openFile', 'multiSelections']
-}, function (files) {
-	if (files !== undefined) {
-		const filePath = files[0];
-		const fileName = path.basename(filePath);
-		storage.set('settings.logo', filePath.replace(/^.*[\\\/]/, ''));
-		fs.copyFileSync(filePath, stores + file_path + fileName);
-		showLogo(fileName);	
-		}
-	});
-
-});
-
-
-
-//Create product click
-$('.create_product').click(function() {	
-	$("#add_product").get(0).reset();
-	$('#action_add_product').val('Add Product');
-	$('#create_product').modal({ backdrop: 'static', keyboard: false });
-	
-});
-
-
-
-//Save product click
-$("#action_add_product").click(function(e) {
-	e.preventDefault();
-
-	if($('#product_name').val() == '') {
-		Swal.fire(
-			'No Item Name!',
-			'Please enter the name of the item!',
-			'error'
-		  );
-		return false;
-	}
-
-	if($('#product_price').val() == '') {
-		$('#product_price').val(0);
-	}
-	
-
-	let formData =  $("#add_product").toJson(); 
-	actionAddProduct(formData);
-});
-
-
-
-//Save customer click
-$('.create_customer').click(function() {	
-	$("#add_customer").get(0).reset();
-	$('#action_create_customer').val('Create Customer');
-	$('#create_customer').modal({ backdrop: 'static', keyboard: false });
-});
-
-
-
-//Craete customer click
-$("#action_create_customer").click(function(e) {
-	e.preventDefault();
-
-	if($('#customerName').val() == '') {
-		Swal.fire(
-			'No Customer Name!',
-			'Please enter a customer name!',
-			'error'
-		  );
-		return false;
-	}
-
-	let formData =  $("#add_customer").toJson(); 		
-	actionCreateCustomer(formData);
-});
-
-
-
-//Open select product modal
-$(document).on('click', ".item-select", function(e) {
-	   e.preventDefault;
-	   item = $(this);
-	   $('#insert').modal({ backdrop: 'static', keyboard: false });
-	   return false;
-
-   });
-   
-
-
-//Open select customer modal
-   $(document).on('click', ".select-customer", function(e) {
-	   e.preventDefault;
-	   let customer = $(this);
-	   $('#insert_customer').modal({ backdrop: 'static', keyboard: false });
-	   return false;
- });
-
-
-
-//Menu item click
- $('a.scrollitem').click(function() {
-	$('a.scrollitem').removeClass('selected');
-	$(this).addClass('selected');
-	let slideNumber = $($(this).attr('href')).index('.page'),
-	margin = slideNumber * -100 + '%';
-	$('.wrapper').animate({
-	marginLeft: margin
-	}, 100);
-
-	return false;
-});
-
-
-
-//Dashboard link click
-$('#dashboard').click(function(){
-	if(sending) {
-		   Swal.fire(
-			   'Still sending!',
-			   'Please wait for feedback from the email process.',
-			   'error'
-			 );
-	   }
-	   else {
-		   ipcRenderer.send('app-reload', '');
-	   }	   
-	 });
-
-
-
-	//Exit click
-	 $('#quit').click(function(){
-	   Swal.fire({
-		   title: 'Are you sure?',
-		   text: "You are about to close the application.",
-		   icon: 'warning',
-		   showCancelButton: true,
-		   confirmButtonColor: '#d33',
-		   cancelButtonColor: '#3085d6',
-		   confirmButtonText: 'Close Application'
-		 }).then((result) => {     
-   
-		   if (result.value) {
-
-			   if(sending) {
-				   Swal.fire(
-					   'Still sending!',
-					   'Please wait for feedback from the email process.',
-					   'error'
-					 );
-			   }
-			   else {
-				   ipcRenderer.send('app-quit', '');
-			   }		
-			   
-		  }
-	  });
-   });
-
-
-
-//Cancel button click
-   $('#cancel').click(() => {
-	let margin = 2 * -100 + '%';
-    $('.wrapper').animate({
-      marginLeft: margin
-	}, 200);
-  });
-
-
-
-
-  function showCompanyDetails() {
-	settings = storage.get('settings');
-	if(settings != undefined) {
-		$('#company_name').val(settings.name);
-		$('#company_email').val(settings.email);
-		$('#company_address').val(settings.address);
-		$('#company_town').val(settings.town);
-		$('#company_vat').val(settings.vat);
-		$('#company_phone').val(settings.phone);
-
-		if(settings.symbol != undefined) {
-			symbol = settings.symbol;
-		}
-
-		if(settings.charge_vat != undefined) {
-			charge_vat = settings.charge_vat == 1 ? true : false;
-			percentage = parseInt(settings.vat_percentage);
-		}
-
-		if(settings.logo != '') {
-			$('#logo').html(`<img src="${ stores + file_path + settings.logo}" class="img-responsive"/>`);
-		}		
-	}	
-	$('#price_currency, #sub_currency, #invoice_sub_currency, #invoice_discount_currency, #shipping_currency, #invoice_total_currency, #vat_currency, #product_price_currency').text(symbol);
-
-	if(charge_vat) {
-		$('#vat_line').show();
-	}
-	else {
-		$('#vat_line').hide();
-	}
-
-	calculateTotal();
   }
 
-  
+
 
 
   function getInvoices(){
@@ -853,11 +849,10 @@ $('#dashboard').click(function(){
 				$('#productSelect').DataTable({
                     "order": [[ 1, "desc" ]]
                     , "autoWidth":false
-					, "info":true
-					,"pageLength": 5
+					, "info":true	
                     , "JQueryUI":true
                     , "ordering":true
-                    , "paging":false                        
+                    , "paging":true                       
 				});
             } 
 	});
@@ -1275,7 +1270,7 @@ $.fn.editInvoice = function (i) {
 					}
 				} );
 			}
-
+ 
 	}
 
 
@@ -1445,9 +1440,10 @@ function actionCreateCustomer(data){
 						<td>${symbol + format(invoice.invoice_subtotal)}</td>
 					</tr>
 					
-					${invoice.invoice_discount != "0.00" ? '<tr><td colspan="3"></td><td colspan="2">DISCOUNT</td><td>'+ symbol + format(invoice.invoice_discount) + '</td></tr>' : ''}			
-					${invoice.invoice_shipping != "" ? '<tr><td colspan="3"></td><td colspan="2">SHIPPING </td><td>'+ symbol + format(invoice.invoice_shipping) + '</td></tr>' : ''}	
-					${charge_vat ? '<tr><td colspan="3"></td><td colspan="2">VAT '+percentage+'%</td><td>'+ symbol + format(invoice.invoice_vat) + '</td></tr>' : ''}								
+					${invoice.invoice_discount != "0.00" ? '<tr><td colspan="3"></td><td colspan="2">DISCOUNT</td><td>'+ symbol + format(invoice.invoice_discount) + '</td></tr>' : ''}	
+					${charge_vat ? '<tr><td colspan="3"></td><td colspan="2">VAT '+percentage+'%</td><td>'+ symbol + format(invoice.invoice_vat) + '</td></tr>' : ''}		
+					${invoice.invoice_shipping != "" ? '<tr><td colspan="3"></td><td colspan="2">DELIVERY </td><td>'+ symbol + format(invoice.invoice_shipping) + '</td></tr>' : ''}	
+													
 					<tr>
 						<td colspan="3"></td>
 						<td colspan="2">TOTAL</td>
@@ -1500,6 +1496,21 @@ function actionCreateCustomer(data){
 		showCompanyDetails();
 	});
 
+
+	$('body').on('click', '#download a', (event) => {
+		event.preventDefault();
+		let link = event.target.href;
+		require("electron").shell.openExternal(link);
+	  });
+
+
+	$('#smtp').change(function(){
+		if ($(this).is(':checked')) {
+				$('#smtp_settings').hide(500);
+			} else {
+				$('#smtp_settings').show(500);
+		}
+	});
 
 	
 
@@ -1839,12 +1850,60 @@ function actionCreateCustomer(data){
                   );
 			  }
 			}
-		});
-		
+		});		
 	});
-
-
 });
+
+
+
+(async () => {
+	let updates = await checkServer('http://update.offlineinvoicing.com', 80);
+	$.get('http://update.offlineinvoicing.com?version='+version, function (data) {
+		data = JSON.parse(data);
+		version = data.version;
+	  if(data.status == 'Update') {
+		  $('#download').show();
+		  $('#state').text('UPDATE AVAILABLE');
+		  $('#features').html('New Features: <hr>');
+		  data.features.forEach(feature => {
+			$('#feature_list').append(`<li>${feature}</li>`);
+		  });		  
+	  }
+  });	 
+})();
+
+
+
+
+$('#dl').click(function(){
+	$('#starting').show();
+	$('#update').hide();
+	$('#dl').hide();
+
+	require("electron").remote.require("electron-download-manager").download({
+		url: "http://update.offlineinvoicing.com/OfflineInvoicing-" + version + ".msi"
+	}, function (error, info) {
+		if (error) {
+			console.log(error);
+			return;
+		}
+		$('#starting').hide();
+		$('#confirmation').text('Download Complete');
+		$('#install').show();	 
+	 
+	});
+});
+
+ 
+
+
+$('#install').click(function(){	
+	if(shell.openItem(app.getPath("downloads") + "\\OfflineInvoicing\\OfflineInvoicing-" + version + ".msi")) {
+		ipcRenderer.send('app-quit', '');
+	}	 
+});
+
+
 
 
 

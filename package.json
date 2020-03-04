@@ -1,23 +1,22 @@
 {
   "name": "OfflineInvoicing",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Offline Invoicing software for Windows.",
-  "author": "Hosting Domain",
+  "author": "Offline Invoicing",
   "private": true,
-  "main": "start.js",
-  "build": {
-    "appId": "01",
-    "directories": {
-      "buildResources": "assets"
-    }
-  },
+  "main": "start.js",  
   "dependencies": {
     "electron": "^6.0.12",
+    "electron-context-menu": "^0.15.1",
+    "electron-download-manager": "^2.1.2",
+    "electron-packager": "^14.2.1",
     "electron-pdf-window": "^1.0.12",
     "electron-store": "^5.1.0",
+    "electron-wix-msi": "^2.2.0",
     "file-saver": "^2.0.2",
     "highcharts": "^8.0.0",
     "html2canvas": "^1.0.0-rc.5",
+    "html2pdf.js": "^0.9.1",
     "is-port-reachable": "^3.0.0",
     "jquery": "^3.4.1",
     "jspdf": "^1.5.3",
@@ -29,7 +28,9 @@
   },
   "scripts": {
     "electron": "cross-env NODE_ENV=dev nodemon --exec \"\"electron .\"\"",
-    "electron-build": "electron-builder"
+    "electron-build": "electron-builder",
+    "package-win": "electron-packager . OfflineInvoicing --overwrite --asar=false --platform=win32 --arch=x64 --icon=assets/images/icon.ico --prune=true --out=release-builds --version-string.ProductName=\"OfflineInvoicing\"",
+    "setup": "electron-installer-windows --src release-builds/OfflineInvoicing-win32-x64/ --dest installers/"
   },
   "browserslist": {
     "production": [
@@ -46,8 +47,8 @@
   "devDependencies": {
     "cross-env": "^6.0.3",
     "electron-builder": "^21.2.0",
+    "electron-installer-windows": "^3.0.0",
     "electron-is-dev": "^1.1.0",
-    "electron-winstaller": "^4.0.0",
     "nodemon": "^1.19.3"
   }
 }

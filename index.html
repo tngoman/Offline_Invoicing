@@ -15,11 +15,11 @@
        <div id="sending"><img src="assets/images/sending.gif"></div>
         <div id="sidebar">
             <ul id="menu-v">
-                <li><a href="#" id="dashboard"><span class="glyphicon glyphicon-stats"></span> Dashboard</a></li i>
+                <li><a href="#dashboard" class="scrollitem" id="dash"><span class="glyphicon glyphicon-stats"></span> Dashboard</a></li i>
                 <li>
                     <a href="#" class="arrow"><span class="glyphicon glyphicon-credit-card"></span> Invoices</a>
                     <ul>
-                        <li><a href="#create" class="scrollitem"  id="create_btn">Create</a></li>
+                        <li><a href="#create" class="scrollitem" id="create_btn">Create</a></li>
                         <li><a href="#manage_invoices" class="scrollitem">Manage</a></li>
                     </ul>
                 </li>
@@ -49,12 +49,26 @@
                 <li><a href="#" class="settings"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
                 <li><a href="#" id="quit"><span class="glyphicon glyphicon-off"></span> Exit</a></li>
             </ul>
+
+            <div id="download">
+                <div id="update">
+                <h6 id="state">UPDATE AVAILABLE</h6>
+                   <div id="features"></div>
+                    <ul id="feature_list"></ul>  
+                </div>          
+
+            <button class="btn btn-sm btn-inverse btn-block" id="dl">Download</button>
+            <div id="starting"><strong>Downloading Update</strong> You can continue to use the application.</div>
+            <div id="confirmation"></div>
+            <button class="btn btn-sm btn-inverse btn-block" id="install">Install Update</button>
+         </div>
         </div>
 
 
+  
 
 
-           <div class="container wrapper">  
+           <div class="container wrapper" id="wrapper">  
 
             <div id="dashboard" class="page">                
                 <div class="simulate">
@@ -246,13 +260,13 @@
                                     <th width="300">
                                         <h4>Description</h4>
                                     </th>
-                                    <th>
+                                    <th width="100">
                                         <h4>Qty</h4>
                                     </th>
-                                    <th>
+                                    <th width="130">
                                         <h4>Price</h4>
                                     </th>
-                                    <th width="150">
+                                    <th width="130">
                                         <h4>Discount</h4>
                                     </th>
                                     <th>
@@ -329,7 +343,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-xs-3 col-xs-offset-6">
-                                        <strong class="shipping">Shipping:</strong>
+                                        <strong class="shipping">Delivery:</strong>
                                     </div>
                                     <div class="col-xs-3">
                                         <div class="input-group input-group-sm">
@@ -649,40 +663,42 @@
                             <strong>SMTP SETTINGS</strong>
                             
                             <div class="form-group">                              
-                                <input type="checkbox" id="smtp" style="max-width: 30px; float: left;"> Use offlineinvoicing.com settings
+                                <input type="checkbox" id="smtp" style="max-width: 30px; float: left;"> Use offlineinvoicing.com email settings
                               </div>  
                               
+                            <div id="smtp_settings">
                               <hr>   
                             
                             <div class="form-group row">
                                 <label class="col-sm-3">Host:</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="smtp_host">
+                                    <input type="text" class="form-control" id="smtp_host" placeholder="Server URL">
                                 </div>
                             </div>
 
                             <div class="form-group row">
                                 <label class="col-sm-3">Port:</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="smtp_port">
+                                    <input type="text" class="form-control" id="smtp_port" placeholder="Port Number">
                                 </div>
                             </div>
 
                             <div class="form-group row">
                                 <label class="col-sm-3">User:</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="smtp_user">
+                                    <input type="text" class="form-control" id="smtp_user" placeholder="Username">
                                 </div>
                             </div>
 
                             <div class="form-group row">
                                 <label class="col-sm-3">Pass:</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="smtp_pass">
+                                    <input type="text" class="form-control" id="smtp_pass" placeholder="Password">
                                 </div>
                             </div>
 
-                             
+                        </div>
+                                                        
             
                  
                         <input type="submit" id="submitProduct" class="btn btn-primary btn-block waves-effect waves-light">

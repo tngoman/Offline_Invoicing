@@ -1,9 +1,8 @@
 body {
-
 	height: 100%;
   margin: 0;
   overflow: hidden;
-  position: relative;
+  position:relative;
 }
 
 .clear { 
@@ -215,9 +214,7 @@ body {
   .btn-custom.btn-purple {
     color: #7266ba !important;
   }
-  .btn-custom.btn-white {
-    color: #4c5667 !important;
-  }
+ 
   .btn-custom.btn-white:hover,
   .btn-custom.btn-white:focus,
   .btn-custom.btn-white:active {
@@ -626,8 +623,7 @@ ul#menu-v, #menu-v ul
 }
 
 .simulate {
-	height: 100vh;
-	overflow-y: hidden;
+
   }
 
   .page {
@@ -751,7 +747,7 @@ ul#menu-v, #menu-v ul
 
   #sending {
       width: 300px;
-      z-index: 99999; 
+      z-index: 999; 
       margin-left: auto;
       margin-right: auto;
       position: absolute;
@@ -759,3 +755,56 @@ ul#menu-v, #menu-v ul
       left: 45%;
       display: none;
   }
+
+  #sending img {
+    max-width: 170px;
+  }
+ 
+  #smtp_settings {
+    display: none;
+  }
+
+  #download {
+    margin: 10px;
+    border: 1px solid #0F0D41;
+    padding: 10px;
+    color: #ccc;
+    display: none;
+  }
+
+  ul {
+    display: block;
+    list-style-type: disc;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    padding-inline-start: 10px;
+}
+
+.btn-custom.btn-white {
+  color: #4c5667 !important;
+}
+
+#progress {
+  margin: 10px;
+  width: 100%;
+  border: 1px solid #222;
+}
+
+#bar {
+  padding: 4px;
+  background-color: #2B619B;
+  width: 0px;
+  text-align: center;
+  color: #fff;
+}
+
+#install, #progress, #starting {
+  display: none;
+}
+
+#wrapper {
+  height: 100vh;
+	overflow-y: scroll;
+}

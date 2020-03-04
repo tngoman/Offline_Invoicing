@@ -1,9 +1,15 @@
+const setupEvents = require('./setupEvents')
+ if (setupEvents.handleSquirrelEvent()) {
+    return;
+ }
+ 
+
 const {app, BrowserWindow, ipcMain} = require('electron');
 const path = require('path')
+const DownloadManager = require("electron-download-manager");
 
-const contextMenu = require('electron-context-menu');
 
-let mainWindow
+let mainWindow;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -21,7 +27,7 @@ function createWindow() {
   });
 
 
-
+  
   mainWindow.maximize();
   mainWindow.show();
 
@@ -31,7 +37,8 @@ function createWindow() {
 
   mainWindow.on('closed', () => {
     mainWindow = null
-  })
+  });
+  
 }
 
 
@@ -49,6 +56,9 @@ app.on('activate', () => {
   }
 })
 
+DownloadManager.register({
+    downloadFolder: app.getPath("downloads") + "/OfflineInvoicing"
+});
 
 
 ipcMain.on('app-quit', (evt, arg) => {
@@ -59,10 +69,5 @@ ipcMain.on('app-quit', (evt, arg) => {
 ipcMain.on('app-reload', (event, arg) => {
   mainWindow.reload();
 });
-
-
-
-
  
-
  
