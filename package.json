@@ -6,7 +6,7 @@
   "private": true,
   "main": "start.js",  
   "dependencies": {
-    "electron": "^6.0.12",
+    "electron": ">=7.2.4",
     "electron-context-menu": "^0.15.1",
     "electron-download-manager": "^2.1.2",
     "electron-packager": "^14.2.1",
